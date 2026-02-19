@@ -12,12 +12,6 @@ pipeline {
 
     stages {
 
-        stage('Checkout') {
-            steps {
-                git 'https://github.com/yourusername/demo-app.git'
-            }
-        }
-
         stage('Build') {
             steps {
                 sh 'mvn clean package'
@@ -41,8 +35,4 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                sh 'docker run -d -p 8080:8080 $DOCKER_IMAGE'
-            }
-        }
-    }
-}
+                sh 'docker run -d -p 8080:8080 $DOCKER_I_
