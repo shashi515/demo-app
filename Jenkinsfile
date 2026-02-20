@@ -7,6 +7,14 @@ pipeline {
 
     stages {
 
+        stage('Check Java') {
+            steps {
+                sh 'java -version'
+                sh 'mvn -version'
+                sh 'echo $JAVA_HOME'
+            }
+        }
+
         stage('Build') {
             steps {
                 sh 'mvn clean package'
@@ -21,8 +29,12 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                    sh 'docker login -u $USER -p $PASS'
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub',
+                    passwordVariable: 'PASS',
+                    usernameVariable: 'USER'
+                )]) {
+                    sh 'echo $PASS | docker login -u $USER --password-stdin'
                     sh 'docker push $DOCKER_IMAGE'
                 }
             }
@@ -30,7 +42,10 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                sh 'docker run -d -p 8080:8080 $DOCKER_IMAGE'
+                sh '''
+                docker rm -f demo-app || true
+                docker run -d --name demo-app -p 8080:8080 $DOCKER_IMAGE
+                '''
             }
         }
     }
