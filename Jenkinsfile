@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        maven 'Maven'
-        jdk 'JDK17'
-    }
-
     environment {
         DOCKER_IMAGE = "yourdockerhub/demo-app"
     }
